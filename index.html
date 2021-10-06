@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Assignment</h1>
+    <input type="file" id="uploadFile" accept=".csv" class="btn btn-grad" />
+    <button id="uploadConfirm" class="btn btn-grad">Upload</button>
+    <h2>Question 1</h2>
+    <p id="1">Total sales of the store. ?</p>
+    <h2>Question 2</h2>
+    <p id="2">Month wise sales totals. 1st ?</p>
+    <p id="3">Month wise sales totals. 2nd ?</p>
+    <p id="4">Month wise sales totals. 3rd ?</p>
+    <h2>Question 3</h2>
+    <p id="5">Most popular item (most quantity sold) in each month. 1st ?</p>
+    <p id="6">Most popular item (most quantity sold) in each month. 2nd ?</p>
+    <p id="7">Most popular item (most quantity sold) in each month. 3rd ?</p>
+    <h2>Question 4</h2>
+    <p id="8">Items generating most revenue in each month. 1st ?</p>
+    <p id="9">Items generating most revenue in each month. 2nd ?</p>
+    <p id="10">Items generating most revenue in each month. 3rd ?</p>
+    <h2>Question 5</h2>
+    <p id="11">
+      For the most popular item, find the max number of orders each month. 1st ?
+    </p>
+    <p id="12">
+      For the most popular item, find the min number of orders each month. 1st ?
+    </p>
+    <p id="13">
+      For the most popular item, find the average number of orders each month.
+      1st ?
+    </p>
+    <p id="14">
+      For the most popular item, find the max number of orders each month. 2nd ?
+    </p>
+    <p id="15">
+      For the most popular item, find the min number of orders each month. 2nd ?
+    </p>
+    <p id="16">
+      For the most popular item, find the average number of orders each month.
+      2nd ?
+    </p>
+    <p id="17">
+      For the most popular item, find the max number of orders each month. 3rd ?
+    </p>
+    <p id="18">
+      For the most popular item, find the min number of orders each month. 3rd ?
+    </p>
+    <p id="19">
+      For the most popular item, find the average number of orders each month.
+      3rd ?
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.1/papaparse.min.js"></script>
+    <script>
+      // for rendering console output to screen
+      const log1 = document.getElementById("1");
+      const log2 = document.getElementById("2");
+      const log3 = document.getElementById("3");
+      const log4 = document.getElementById("4");
+      const log5 = document.getElementById("5");
+      const log6 = document.getElementById("6");
+      const log7 = document.getElementById("7");
+      const log8 = document.getElementById("8");
+      const log9 = document.getElementById("9");
+      const log10 = document.getElementById("10");
+      const log11 = document.getElementById("11");
+      const log12 = document.getElementById("12");
+      const log13 = document.getElementById("13");
+      const log14 = document.getElementById("14");
+      const log15 = document.getElementById("15");
+      const log16 = document.getElementById("16");
+      const log17 = document.getElementById("17");
+      const log18 = document.getElementById("18");
+      const log19 = document.getElementById("19");
+
+      //Parsing the CSV file
+      const uploadConfirm = document
+        .getElementById("uploadConfirm")
+        .addEventListener("click", () => {
+          Papa.parse(document.getElementById("uploadFile").files[0], {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+              console.log(results);
+
+              let dateInt = "random";
+              function stringToInt(dateInt) {
+                let converter = (num) => Number(num);
+                var intArr2 = Array.from(String(dateInt), converter);
+                return intArr2;
+              }
+
+              // Declaring all the necessary Set, Maps and variables
+              let janSale = 0;
+              let febSale = 0;
+              let marSale = 0;
+              let mySet = new Set();
+              const quantMap1 = new Map();
+              const salesMap1 = new Map();
+              const quantMap2 = new Map();
+              const salesMap2 = new Map();
+              const quantMap3 = new Map();
+              const salesMap3 = new Map();
+              let popularArr1 = new Array();
+              let popularArr2 = new Array();
+              let popularArr3 = new Array();
+              let sum1 = (sum2 = sum3 = 0);
+              let len1 = (len2 = len3 = 0);
+
+              // Calculating monthly sales
+              for (let i = 0; i < results.data.length; i++) {
+                mySet.add(results.data[i].SKU);
+                var intArr = stringToInt(results.data[i].Date);
+                let temp = parseInt(results.data[i].TotalPrice);
+
+                //1st month
+                if (intArr[4] == 1) {
+                  janSale += temp;
+                }
+
+                //2nd month
+                else if (intArr[4] == 2) {
+                  febSale += temp;
+                }
+
+                //3rd month
+                else if (intArr[4] == 3) {
+                  marSale += temp;
+                }
+              }
+
+              //Initialize the map with value zero
+              for (let item of mySet) {
+                quantMap1.set(item, 0);
+                quantMap2.set(item, 0);
+                quantMap3.set(item, 0);
+                salesMap1.set(item, 0);
+                salesMap2.set(item, 0);
+                salesMap3.set(item, 0);
+              }
+
+              for (let i = 0; i < results.data.length; i++) {
+                var intArr = stringToInt(results.data[i].Date);
+
+                //storing current items Quantity & Totalprice in temporary variable
+                let temp = parseInt(results.data[i].Quantity);
+                let temp2 = parseInt(results.data[i].TotalPrice);
+
+                //1st month
+                if (intArr[4] == 1) {
+                  //updating Quantity map
+                  let tempQuant = quantMap1.get(results.data[i].SKU) + temp;
+                  quantMap1.set(results.data[i].SKU, tempQuant);
+
+                  //updating Sales Map
+                  let tempSale = salesMap1.get(results.data[i].SKU) + temp2;
+                  salesMap1.set(results.data[i].SKU, tempSale);
+                }
+
+                //2nd month
+                else if (intArr[4] == 2) {
+                  //updating Quantity map
+                  let tempQuant = quantMap2.get(results.data[i].SKU) + temp;
+                  quantMap2.set(results.data[i].SKU, tempQuant);
+
+                  //updating Sales Map
+                  let tempSale = salesMap2.get(results.data[i].SKU) + temp2;
+                  salesMap2.set(results.data[i].SKU, tempSale);
+                }
+
+                //3rd month
+                else if (intArr[4] == 3) {
+                  //updating Quantity map
+                  let tempQuant = quantMap3.get(results.data[i].SKU) + temp;
+                  quantMap3.set(results.data[i].SKU, tempQuant);
+
+                  //updating Sales Map
+                  let tempSale = salesMap3.get(results.data[i].SKU) + temp2;
+                  salesMap3.set(results.data[i].SKU, tempSale);
+                }
+              }
+
+              //finding the max element from quantMap1 and storing in Array
+              let quantArr1 = [...quantMap1.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //finding the max element from quantMap2 and storing in Array
+              let quantArr2 = [...quantMap2.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //finding the max element from quantMap3 and storing in Array
+              let quantArr3 = [...quantMap3.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //finding the max element from salesMap1 and storing in Array
+              let salesArr1 = [...salesMap1.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //finding the max element from salesMap2 and storing in Array
+              let salesArr2 = [...salesMap2.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //finding the max element from salesMap3 and storing in Array
+              let salesArr3 = [...salesMap3.entries()].reduce((a, e) =>
+                e[1] > a[1] ? e : a
+              );
+
+              //FInding most popular items of the month
+
+              console.log(popularArr1);
+              for (let i = 0; i < results.data.length; i++) {
+                var intArr = stringToInt(results.data[i].Date);
+
+                if (results.data[i].SKU == "Hot Chocolate Fudge") {
+                  //1st month
+                  if (intArr[4] == 1) {
+                    //Calculating total sales
+                    len1++;
+                    // console.log(results.data[i].Quantity);
+                    popularArr1.push(results.data[i].Quantity);
+                    sum1 += parseInt(results.data[i].Quantity);
+                  }
+
+                  //2nd month
+                  else if (intArr[4] == 2) {
+                    //Calculating total sales
+                    len2++;
+                    popularArr2.push(results.data[i].Quantity);
+                    sum2 += parseInt(results.data[i].Quantity);
+                  }
+
+                  //3rd month
+                  else if (intArr[4] == 3) {
+                    //Calculating total sales
+                    len3++;
+                    popularArr3.push(results.data[i].Quantity);
+                    sum3 += parseInt(results.data[i].Quantity);
+                  }
+                }
+              }
+              console.log(len1);
+              console.log(len2);
+              console.log(len3);
+              //Converting string array into int array
+
+              var result1 = popularArr1.map(function (x) {
+                return parseInt(x, 10);
+              });
+              var result2 = popularArr2.map(function (x) {
+                return parseInt(x, 10);
+              });
+              var result3 = popularArr3.map(function (x) {
+                return parseInt(x, 10);
+              });
+
+              // *********************************************************************************************** //
+
+              //Console output all the answers
+
+              //1st question
+              console.log(
+                `Total sale in 3 months is ${janSale + febSale + marSale}`
+              );
+
+              //2nd question
+              console.log(`Sale in 1st month is ${janSale}`);
+              console.log(`Sale in 2nd month is ${febSale}`);
+              console.log(`Sale in 3rd month is ${marSale}`);
+
+              //3rd Question
+              console.log(
+                `${quantArr1[0]} is the most popular item sold in the 1st month & the Quantity of the product sold is ${quantArr1[1]}`
+              );
+
+              console.log(
+                `${quantArr2[0]} is the most popular item sold in the 2nd month & the Quantity of the product sold is ${quantArr2[1]}`
+              );
+
+              console.log(
+                `${quantArr3[0]} is the most popular item sold in the 3rd month & the Quantity of the product sold is ${quantArr3[1]}`
+              );
+
+              //4th Question
+              console.log(
+                `${salesArr1[0]} generated the max revenue in the 1st month & the revenue is ${salesArr1[1]}`
+              );
+              console.log(
+                `${salesArr2[0]} generated the max revenue in the 2nd month & the revenue is ${salesArr2[1]}`
+              );
+              console.log(
+                `${salesArr3[0]} generated the max revenue in the 3rd month & the revenue is ${salesArr3[1]}`
+              );
+
+              //5th Question
+
+              console.log(
+                `The max number the popular item is sold in 1st month is ${Math.max(
+                  ...result1
+                )}`
+              );
+              console.log(
+                `The min number the popular item is sold in 1st month is ${Math.min(
+                  ...result1
+                )}`
+              );
+              console.log(
+                `The average number the popular item is sold in 1st month is ${
+                  sum1 / result1.length
+                }`
+              );
+
+              console.log(result1);
+              console.log(result2);
+              console.log(result3);
+              console.log(`${sum1} and ${result1.length}`);
+              console.log(`${sum2} and ${result2.length}`);
+              console.log(`${sum3} and ${result3.length}`);
+
+              console.log(
+                `The max number the popular item is sold in 1st month is ${Math.max(
+                  ...result1
+                )}`
+              );
+              console.log(
+                `The min number the popular item is sold in 1st month is ${Math.min(
+                  ...result1
+                )}`
+              );
+              console.log(
+                `The average number the popular item is sold in 1st month is ${
+                  sum1 / result1.length
+                }`
+              );
+
+              console.log(
+                `The max number the popular item is sold in 2nd month is ${Math.max(
+                  ...result2
+                )}`
+              );
+              console.log(
+                `The min number the popular item is sold in 2nd month is ${Math.min(
+                  ...result2
+                )}`
+              );
+              console.log(
+                `The average number the popular item is sold in 2nd month is ${
+                  sum2 / result2.length
+                }`
+              );
+
+              console.log(
+                `The max number the popular item is sold in 3rd month is ${Math.max(
+                  ...result3
+                )}`
+              );
+              console.log(
+                `The min number the popular item is sold in 3rd month is ${Math.min(
+                  ...result3
+                )}`
+              );
+              console.log(
+                `The average number the popular item is sold in 3rd month is ${
+                  sum3 / result3.length
+                }`
+              );
+
+              // Screen output
+
+              //1st question
+              log1.textContent = `Total sale in 3 months is ${
+                janSale + febSale + marSale
+              }`;
+
+              //2nd question
+              log2.textContent = `Sale in 1st month is ${janSale}`;
+              log3.textContent = `Sale in 2nd month is ${febSale}`;
+              log4.textContent = `Sale in 3rd month is ${marSale}`;
+
+              //3rd Question
+              log5.textContent = `${quantArr1[0]} is the most popular item sold in the 1st month & the Quantity of the product sold is ${quantArr1[1]}`;
+
+              log6.textContent = `${quantArr2[0]} is the most popular item sold in the 2nd month & the Quantity of the product sold is ${quantArr2[1]}`;
+
+              log7.textContent = `${quantArr3[0]} is the most popular item sold in the 3rd month & the Quantity of the product sold is ${quantArr3[1]}`;
+
+              //4th Question
+              log8.textContent = `${salesArr1[0]} generated the max revenue in the 1st month & the revenue is ${salesArr1[1]}`;
+              log9.textContent = `${salesArr2[0]} generated the max revenue in the 2nd month & the revenue is ${salesArr2[1]}`;
+              log10.textContent = `${salesArr3[0]} generated the max revenue in the 3rd month & the revenue is ${salesArr3[1]}`;
+
+              //5th Question
+
+              log11.textContent = `The max number the popular item is sold in 1st month is ${Math.max(
+                ...result1
+              )}`;
+              log12.textContent = `The min number the popular item is sold in 1st month is ${Math.min(
+                ...result1
+              )}`;
+              log13.textContent = `The average number the popular item is sold in 1st month is ${
+                sum1 / result1.length
+              }`;
+
+              log14.textContent = `The max number the popular item is sold in 2nd month is ${Math.max(
+                ...result2
+              )}`;
+              log15.textContent = `The min number the popular item is sold in 2nd month is ${Math.min(
+                ...result2
+              )}`;
+              log16.textContent = `The average number the popular item is sold in 2nd month is ${
+                sum2 / result2.length
+              }`;
+
+              log17.textContent = `The max number the popular item is sold in 3rd month is ${Math.max(
+                ...result3
+              )}`;
+              log18.textContent = `The min number the popular item is sold in 3rd month is ${Math.min(
+                ...result3
+              )}`;
+              log19.textContent = `The average number the popular item is sold in 3rd month is ${
+                sum3 / result3.length
+              }`;
+            },
+          });
+        });
+    </script>
+  </body>
+</html>
